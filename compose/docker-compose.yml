@@ -35,6 +35,8 @@ services:
 
   redis:
     image: redis:5.0
+    ports:
+      - "6379:6379"
 
   elasticsearch:
     image: markoshust/magento-elasticsearch:7.6.2-2
