@@ -7,10 +7,9 @@ version: "3"
 
 services:
   app:
-    image: markoshust/magento-nginx:1.18-2
+    image: kodergarten/magento-nginx-sans-ssl:latest
     ports:
       - "80:8000"
-      - "443:8443"
     links:
       - db
       - phpfpm
