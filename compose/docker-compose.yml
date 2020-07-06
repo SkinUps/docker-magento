@@ -39,7 +39,8 @@ services:
       - "6379:6379"
 
   elasticsearch:
-    image: markoshust/magento-elasticsearch:7.6.2-2
+    # image: markoshust/magento-elasticsearch:7.6.2-2
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.6.2
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -66,7 +67,10 @@ services:
 
 volumes:
   appdata:
+    driver: local
   dbdata:
+    driver: local
   rabbitmqdata:
+    driver: local
   sockdata:
   ssldata:

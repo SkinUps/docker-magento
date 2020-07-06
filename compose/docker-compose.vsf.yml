@@ -1,0 +1,95 @@
+# Mark Shust's Docker Configuration for Magento
+# (https://github.com/markshust/docker-magento)
+#
+# Version 32.0.1
+
+version: "3"
+
+services:
+  app:
+    volumes: &appvolumes
+      # Host mounts with performance penalty, only put what is necessary here
+      - ./src/app/code:/var/www/html/app/code:delegated
+      - ./src/app/design:/var/www/html/app/design:delegated
+      - ./src/app/etc:/var/www/html/app/etc:delegated
+      - ./src/composer.json:/var/www/html/composer.json:delegated
+      - ./src/composer.lock:/var/www/html/composer.lock:delegated
+      - ./src/nginx.conf.sample:/var/www/html/nginx.conf:delegated
+      #- ./src/auth.json:/var/www/html/auth.json:delegated
+      #- ./src/m2-hotfixes:/var/www/html/m2-hotfixes:delegated
+      #- ./src/patches:/var/www/html/patches:delegated
+      #- ./src/var/log:/var/www/html/var/log:delegated
+      #- ./src/var/report:/var/www/html/var/report:delegated
+      # Linux only: remove the above lines and mount the entire src directory with:
+      #- ./src:/var/www/html:delegated
+
+  phpfpm:
+    volumes: *appvolumes
+    # Linux only: host.docker.internal doesn't exist https://github.com/docker/for-linux/issues/264
+    # Uncomment two lines below & replace IP with result of: docker run --rm alpine ip route | awk 'NR==1 {print $3}'
+    #extra_hosts:
+    #  - "host.docker.internal:IP"
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025"
+      - "8025:8025"
+
+  # Disabling cron by default as it uses higher CPU, enable if needed
+  #cron:
+  #  volumes: *appvolumes
+
+  vue-storefront:
+    image: docker.pkg.github.com/skinups/vue-storefront/vue-server:latest
+    environment:
+      - ELASTICSEARCH_HOST=http://bergamot:8080/api/catalog
+      - API_URL=http://bergamot:8080
+      - CART_ENDPOINT=http://bergamot:8080/api/cart/create?token={{token}}
+      - CART_UPDATEITEM_ENDPOINT=http://bergamot:8080/api/cart/update?token={{token}}&cartId={{cartId}}
+      - CART_DELETEITEM_ENDPOINT=http://bergamot:8080/api/cart/delete?token={{token}}&cartId={{cartId}}
+      - CART_PULL_ENDPOINT=http://bergamot:8080/api/cart/pull?token={{token}}&cartId={{cartId}}
+      - CART_TOTALS_ENDPOINT=http://bergamot:8080/api/cart/totals?token={{token}}&cartId={{cartId}}
+      - CART_PAYMENTMETHODS_ENDPOINT=http://bergamot:8080/api/cart/payment-methods?token={{token}}&cartId={{cartId}}
+      - CART_SHIPPINGMETHODS_ENDPOINT=http://bergamot:8080/api/cart/shipping-methods?token={{token}}&cartId={{cartId}}
+      - CART_SHIPPINGINFO_ENDPOINT=http://bergamot:8080/api/cart/shipping-information?token={{token}}&cartId={{cartId}}
+      - CART_COLLECTTOTALS_ENDPOINT=http://bergamot:8080/api/cart/collect-totals?token={{token}}&cartId={{cartId}}
+      - CART_DELETECOUPON_ENDPOINT=http://bergamot:8080/api/cart/delete-coupon?token={{token}}&cartId={{cartId}}
+      - CART_APPLYCOUPON_ENDPOINT=http://bergamot:8080/api/cart/apply-coupon?token={{token}}&cartId={{cartId}}&coupon={{coupon}}
+      - PRODUCTS_ENDPOINT=http://bergamot:8080/api/product
+      - ORDERS_ENDPOINT=http://bergamot:8080/api/order
+      - REVIEWS_CREATE_ENDPOINT=http://bergamot:8080/api/review/create?token={{token}}
+      - USERS_ENDPOINT=http://bergamot:8080/api/user
+      - USERS_HISTORY_ENDPOINT=http://bergamot:8080/api/user/order-history?token={{token}}&pageSize={{pageSize}}&currentPage={{currentPage}}
+      - USERS_RESETPASSWORD_ENDPOINT=http://bergamot:8080/api/user/reset-password
+      - USERS_CREATEPASSWORD_ENDPOINT=http://bergamot:8080/api/user/create-password
+      - USERS_CHANGEPASSWORD_ENDPOINT=http://bergamot:8080/api/user/change-password?token={{token}}
+      - USERS_LOGIN_ENDPOINT=http://bergamot:8080/api/user/login
+      - USERS_CREATE_ENDPOINT=http://bergamot:8080/api/user/create
+      - USERS_ME_ENDPOINT=http://bergamot:8080/api/user/me?token={{token}}
+      - USERS_REFRESH_ENDPOINT=http://bergamot:8080/api/user/refresh
+      - STOCK_ENDPOINT=http://bergamot:8080/api/stock
+      - IMAGES_BASE_URL=http://bergamot:8080/img/
+      - NEWSLETTER_ENDPOINT=http://bergamot:8080/api/ext/mailchimp-subscribe/subscribe
+      - MAILER_SEND=http://bergamot:8080/api/ext/mail-service/send-email
+      - MAILER_TOKEN=http://bergamot:8080/api/ext/mail-service/get-token
+    ports:
+      - "3000:3000"
+
+  vue-storefront-api:
+    image: docker.pkg.github.com/skinups/vue-storefront-api/vue-server-api:latest
+    environment:
+      - REDIS_HOST=bergamot
+      - MAGENTO2_IMG_URL=http://bergamot/pub/media/catalog/product
+      - MAGENTO2_ASSET_PATH=html/pub/media
+      - MAGENTO2_URL=http://bergamot
+      - MAGENTO2_API_URL=http://bergamot/rest
+      - MAGENTO2_ASSET_PATH=var/pub/media
+      - MAGENTO2_CONSUMER_KEY=zxso0bss73wze2orc5pynoansscir96c
+      - MAGENTO2_CONSUMER_SECRET=8t4yota61tspirlw8mkzba4j85l4nqd1
+      - MAGENTO2_ACCESS_TOKEN=gn23nok10wgsm63avjzd6do4t0qgyxz0
+      - MAGENTO2_ACCESS_TOKEN_SECRET=vw3d79cvk0k7zb0brrg84amdkm88z9r1
+    ports:
+      - "8080:8080"
+    volumes:
+      - appdata:/home/node/vue-storefront-api/html
