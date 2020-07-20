@@ -36,6 +36,11 @@ services:
       - "1025"
       - "8025:8025"
 
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:7.6.2
+    ports:
+      - 5601:5601
+
   # Disabling cron by default as it uses higher CPU, enable if needed
   #cron:
   #  volumes: *appvolumes
@@ -43,46 +48,47 @@ services:
   vue-storefront:
     image: docker.pkg.github.com/skinups/vue-storefront/vue-server:latest
     environment:
-      - ELASTICSEARCH_HOST=http://bergamot:8080/api/catalog
       - API_URL=http://bergamot:8080
-      - CART_ENDPOINT=http://bergamot:8080/api/cart/create?token={{token}}
-      - CART_UPDATEITEM_ENDPOINT=http://bergamot:8080/api/cart/update?token={{token}}&cartId={{cartId}}
-      - CART_DELETEITEM_ENDPOINT=http://bergamot:8080/api/cart/delete?token={{token}}&cartId={{cartId}}
-      - CART_PULL_ENDPOINT=http://bergamot:8080/api/cart/pull?token={{token}}&cartId={{cartId}}
-      - CART_TOTALS_ENDPOINT=http://bergamot:8080/api/cart/totals?token={{token}}&cartId={{cartId}}
-      - CART_PAYMENTMETHODS_ENDPOINT=http://bergamot:8080/api/cart/payment-methods?token={{token}}&cartId={{cartId}}
-      - CART_SHIPPINGMETHODS_ENDPOINT=http://bergamot:8080/api/cart/shipping-methods?token={{token}}&cartId={{cartId}}
-      - CART_SHIPPINGINFO_ENDPOINT=http://bergamot:8080/api/cart/shipping-information?token={{token}}&cartId={{cartId}}
-      - CART_COLLECTTOTALS_ENDPOINT=http://bergamot:8080/api/cart/collect-totals?token={{token}}&cartId={{cartId}}
-      - CART_DELETECOUPON_ENDPOINT=http://bergamot:8080/api/cart/delete-coupon?token={{token}}&cartId={{cartId}}
-      - CART_APPLYCOUPON_ENDPOINT=http://bergamot:8080/api/cart/apply-coupon?token={{token}}&cartId={{cartId}}&coupon={{coupon}}
-      - PRODUCTS_ENDPOINT=http://bergamot:8080/api/product
-      - ORDERS_ENDPOINT=http://bergamot:8080/api/order
-      - REVIEWS_CREATE_ENDPOINT=http://bergamot:8080/api/review/create?token={{token}}
-      - USERS_ENDPOINT=http://bergamot:8080/api/user
-      - USERS_HISTORY_ENDPOINT=http://bergamot:8080/api/user/order-history?token={{token}}&pageSize={{pageSize}}&currentPage={{currentPage}}
-      - USERS_RESETPASSWORD_ENDPOINT=http://bergamot:8080/api/user/reset-password
-      - USERS_CREATEPASSWORD_ENDPOINT=http://bergamot:8080/api/user/create-password
-      - USERS_CHANGEPASSWORD_ENDPOINT=http://bergamot:8080/api/user/change-password?token={{token}}
-      - USERS_LOGIN_ENDPOINT=http://bergamot:8080/api/user/login
-      - USERS_CREATE_ENDPOINT=http://bergamot:8080/api/user/create
-      - USERS_ME_ENDPOINT=http://bergamot:8080/api/user/me?token={{token}}
-      - USERS_REFRESH_ENDPOINT=http://bergamot:8080/api/user/refresh
-      - STOCK_ENDPOINT=http://bergamot:8080/api/stock
       - IMAGES_BASE_URL=http://bergamot:8080/img/
-      - NEWSLETTER_ENDPOINT=http://bergamot:8080/api/ext/mailchimp-subscribe/subscribe
-      - MAILER_SEND=http://bergamot:8080/api/ext/mail-service/send-email
-      - MAILER_TOKEN=http://bergamot:8080/api/ext/mail-service/get-token
+      - ELASTICSEARCH_HOST=/api/catalog
+      - CART_ENDPOINT=/api/cart/create?token={{token}}
+      - CART_UPDATEITEM_ENDPOINT=/api/cart/update?token={{token}}&cartId={{cartId}}
+      - CART_DELETEITEM_ENDPOINT=/api/cart/delete?token={{token}}&cartId={{cartId}}
+      - CART_PULL_ENDPOINT=/api/cart/pull?token={{token}}&cartId={{cartId}}
+      - CART_TOTALS_ENDPOINT=/api/cart/totals?token={{token}}&cartId={{cartId}}
+      - CART_PAYMENTMETHODS_ENDPOINT=/api/cart/payment-methods?token={{token}}&cartId={{cartId}}
+      - CART_SHIPPINGMETHODS_ENDPOINT=/api/cart/shipping-methods?token={{token}}&cartId={{cartId}}
+      - CART_SHIPPINGINFO_ENDPOINT=/api/cart/shipping-information?token={{token}}&cartId={{cartId}}
+      - CART_COLLECTTOTALS_ENDPOINT=/api/cart/collect-totals?token={{token}}&cartId={{cartId}}
+      - CART_DELETECOUPON_ENDPOINT=/api/cart/delete-coupon?token={{token}}&cartId={{cartId}}
+      - CART_APPLYCOUPON_ENDPOINT=/api/cart/apply-coupon?token={{token}}&cartId={{cartId}}&coupon={{coupon}}
+      - PRODUCTS_ENDPOINT=/api/product
+      - ORDERS_ENDPOINT=/api/order
+      - REVIEWS_CREATE_ENDPOINT=/api/review/create?token={{token}}
+      - USERS_ENDPOINT=/api/user
+      - USERS_HISTORY_ENDPOINT=/api/user/order-history?token={{token}}&pageSize={{pageSize}}&currentPage={{currentPage}}
+      - USERS_RESETPASSWORD_ENDPOINT=/api/user/reset-password
+      - USERS_CREATEPASSWORD_ENDPOINT=/api/user/create-password
+      - USERS_CHANGEPASSWORD_ENDPOINT=/api/user/change-password?token={{token}}
+      - USERS_LOGIN_ENDPOINT=/api/user/login
+      - USERS_CREATE_ENDPOINT=/api/user/create
+      - USERS_ME_ENDPOINT=/api/user/me?token={{token}}
+      - USERS_REFRESH_ENDPOINT=/api/user/refresh
+      - STOCK_ENDPOINT=/api/stock
+      - NEWSLETTER_ENDPOINT=/api/ext/mailchimp-subscribe/subscribe
+      - MAILER_SEND=/api/ext/mail-service/send-email
+      - MAILER_TOKEN=/api/ext/mail-service/get-token
     ports:
       - "3000:3000"
 
   vue-storefront-api:
     image: docker.pkg.github.com/skinups/vue-storefront-api/vue-server-api:latest
     environment:
-      - REDIS_HOST=bergamot
-      - MAGENTO2_IMG_URL=http://bergamot/pub/media/catalog/product
+      - ELASTICSEARCH_HOST=elasticsearch
+      - REDIS_HOST=redis
+      - MAGENTO2_IMG_URL=http://app/pub/media/catalog/product
       - MAGENTO2_ASSET_PATH=html/pub/media
-      - MAGENTO2_URL=http://bergamot
+      - MAGENTO2_URL=http://app
       - MAGENTO2_API_URL=http://bergamot/rest
       - MAGENTO2_ASSET_PATH=var/pub/media
       - MAGENTO2_CONSUMER_KEY=zxso0bss73wze2orc5pynoansscir96c

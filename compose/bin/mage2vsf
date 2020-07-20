@@ -1,0 +1,29 @@
+#! /bin/bash
+#! /bin/bash
+export TIME_TO_EXIT=20000
+export MAGENTO_CONSUMER_KEY=krzze4ln4eqc8as20ovleuej064m5r3e
+export MAGENTO_CONSUMER_SECRET=6z2ypkabw85lsy9cqg54261l5k8y7qfn
+export MAGENTO_ACCESS_TOKEN=h5c0gp6c6bqrjsnh4ry0nrrcoga3ufy5
+export MAGENTO_ACCESS_TOKEN_SECRET=b0dx3cuela7q6tb4wkvqr249hfyz2ldc
+
+export MAGENTO_URL=http://poc-vm/rest
+
+export MAGENTO_STORE_ID=1
+export MAGENTO_CURRENCY_CODE=EUR
+export ELASTICSEARCH_API_VERSION=7.1
+export DATABASE_URL=http://poc-vm:9200
+export REDIS_HOST=poc-vm
+
+docker run --init --rm --name mage2vsf \
+  --env TIME_TO_EXIT=2000 \
+  --env MAGENTO_CONSUMER_KEY \
+  --env MAGENTO_CONSUMER_SECRET \
+  --env MAGENTO_ACCESS_TOKEN \
+  --env MAGENTO_ACCESS_TOKEN_SECRET \
+  --env MAGENTO_URL \
+  --env MAGENTO_STORE_ID \
+  --env MAGENTO_CURRENCY_CODE \
+  --env ELASTICSEARCH_API_VERSION \
+  --env DATABASE_URL \
+  --env REDIS_HOST \
+  docker.pkg.github.com/skinups/mage2vuestorefront/mage2vsf:latest node --harmony src/cli.js "$@"
