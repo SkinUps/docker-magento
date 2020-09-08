@@ -33,7 +33,7 @@ services:
   mailhog:
     image: mailhog/mailhog
     ports:
-      - "1025"
+      - "1025:1025"
       - "8025:8025"
 
   kibana:
@@ -86,6 +86,7 @@ services:
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
       - REDIS_HOST=redis
+      - DRM_URL=https://drm-dev.sknups.com/v1/api/assets
       - MAGENTO2_IMG_URL=http://app/pub/media/catalog/product
       - MAGENTO2_ASSET_PATH=html/pub/media
       - MAGENTO2_URL=http://app
