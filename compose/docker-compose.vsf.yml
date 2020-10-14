@@ -85,8 +85,13 @@ services:
     image: docker.pkg.github.com/skinups/vue-storefront-api/vue-server-api:latest
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
+      - DRM_URL=http://192.168.1.65:3100/v1/api/assets
       - REDIS_HOST=redis
-      - DRM_URL=https://drm-dev.sknups.com/v1/api/assets
+      - MAIL_HOST=mailhog
+      - MAIL_PORT=1025
+      - MAIL_SECURE=
+      - MAIL_USER=test
+      - MAIL_PASSWORD=test
       - MAGENTO2_IMG_URL=http://app/pub/media/catalog/product
       - MAGENTO2_ASSET_PATH=html/pub/media
       - MAGENTO2_URL=http://app
